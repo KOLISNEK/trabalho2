@@ -1,66 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Atividades Salvas</title>
+  <title>Lista de Tarefas</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>✅ Atividades Salvas</h1>
-  <div id="atividades-salvas"></div>
-  <a href="index.html">← Voltar para lista completa</a>
-
-  <script>
-    async function carregarTarefasConcluidas() {
-      const res = await fetch('http://localhost:3000/tarefas');
-      const tarefas = await res.json();
-      const concluidas = tarefas.filter(t => t.concluida);
-      const container = document.getElementById('atividades-salvas');
-
-      if (concluidas.length === 0) {
-        container.innerHTML = "<p>Nenhuma atividade concluída ainda.</p>";
-        return;
-      }
-
-      concluidas.forEach(tarefa => {
-        const div = document.createElement('div');
-        div.className = 'card';
-        div.innerHTML = `
-          <strong>${tarefa.titulo}</strong><br>
-          <small>${tarefa.descricao}</small>
-          <p>✅ Concluída</p>
-          <button onclick="mostrarDetalhes(${tarefa.id})">🔍 Ver detalhes</button>
-          <button onclick="deletarAtividade(${tarefa.id})">🗑️ Excluir</button>
-          <div id="detalhes-${tarefa.id}" class="detalhes"></div>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    async function mostrarDetalhes(id) {
-      const res = await fetch(`http://localhost:3000/tarefas/${id}`);
-      const tarefa = await res.json();
-      const detalhesDiv = document.getElementById(`detalhes-${id}`);
-
-      detalhesDiv.innerHTML = `
-        <hr>
-        <p><strong>Título:</strong> ${tarefa.titulo}</p>
-        <p><strong>Descrição:</strong> ${tarefa.descricao}</p>
-        <p><strong>Status:</strong> ${tarefa.concluida ? '✅ Concluída' : '⏳ Pendente'}</p>
-      `;
-    }
-
-    async function deletarAtividade(id) {
-      const confirmar = confirm("Deseja realmente excluir esta atividade?");
-      if (!confirmar) return;
-
-      await fetch(`http://localhost:3000/tarefas/${id}`, {
-        method: 'DELETE'
-      });
-
-      location.reload(); // atualiza a página
-    }
-
-    window.onload = carregarTarefasConcluidas;
-  </script>
+  <h1>Minhas Tarefas</h1>
+  <div id="tarefas"></div>
+  <a href="nova.html">➕ Nova tarefa</a>
+  <script src="script.js"></script>
 </body>
 </html>
+<a href="atividades.html">✅ Ver atividades salvas</a>
+<script>
+  async function carregarTarefas() {
+    const res = await fetch('http://localhost:3000/tarefas');
+    const tarefas = await res.json();
+    const container = document.getElementById('tarefas');
+
+    if (tarefas.length === 0) {
+      container.innerHTML = "<p>Nenhuma tarefa cadastrada.</p>";
+      return;
+    }
+
+    tarefas.forEach(tarefa => {
+      const div = document.createElement('div');
+      div.className = 'card';
+      div.innerHTML = `
+        <strong>${tarefa.titulo}</strong><br>
+        <small>${tarefa.descricao}</small><br>
+        <label><input type="checkbox" ${tarefa.concluida ? 'checked' : ''} disabled> Concluída</label><br>
+        <a href="editar.html?id=${tarefa.id}">✏️ Editar</a>
+      `;
+      container.appendChild(div);
+    });
+  }
+
+  window.onload = carregarTarefas;
