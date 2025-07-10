@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Nova Tarefa</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Adicionar Tarefa</h1>
+  <form id="form-nova">
+    <input name="titulo" placeholder="Título" required><br>
+    <textarea name="descricao" placeholder="Descrição" required></textarea><br>
+    <label class="checkbox-label">
+      <input type="checkbox" name="concluida">
+      Marcar como concluída
+    </label><br>
+    <button type="submit">Salvar</button>
+  </form>
+  <a href="index.html">← Voltar</a>
+
+  <script>
+    document.getElementById('form-nova').onsubmit = async (e) => {
+      e.preventDefault();
+      const dados = Object.fromEntries(new FormData(e.target));
+      dados.concluida = e.target.concluida.checked;
+
+      await fetch('http://localhost:3000/tarefas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+      });
+
+      location.href = 'atividades.html'; // redireciona direto para atividades salvas
+    };
+  </script>
+</body>
+</html>
+
