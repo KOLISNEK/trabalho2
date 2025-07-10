@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Editar Tarefa</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Editar Tarefa</h1>
+  <form id="form-editar">
+    <input name="titulo" placeholder="Título" required><br>
+    <textarea name="descricao" placeholder="Descrição" required></textarea><br>
+    <label><input type="checkbox" name="concluida"> Concluída</label><br>
+    <button type="submit">Salvar alterações</button>
+  </form>
+  <a href="index.html">← Voltar</a>
+  <script>
+    const id = new URLSearchParams(location.search).get('id');
+    fetch(`http://localhost:3000/tarefas/${id}`)
+      .then(res => res.json())
+      .then(t => {
+        document.querySelector('input[name="titulo"]').value = t.titulo;
+        document.querySelector('textarea[name="descricao"]').value = t.descricao;
+        document.querySelector('input[name="concluida"]').checked = t.concluida;
+      });
+
+    document.getElementById('form-editar').onsubmit = async (e) => {
+      e.preventDefault();
+      const dados = Object.fromEntries(new FormData(e.target));
+      dados.concluida = e.target.concluida.checked;
+      await fetch(`http://localhost:3000/tarefas/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+      });
+      location.href = 'index.html';
+    };
+  </script>
+</body>
+</html>
